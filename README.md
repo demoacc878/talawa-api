@@ -14,6 +14,8 @@ test-commit
 another test-cmmit
 Core features include:
 
+test commit
+
 1.  Membership management
 2.  Groups management
 3.  Event registrations
