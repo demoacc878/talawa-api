@@ -6,6 +6,7 @@
   "main": "./build/server.js",
   "scripts": {
     "test": "test",
+    "testi": "testo",
     "build": "tsc --pretty --project tsconfig.build.json && node ./scripts/fix-imports/fix-imports.mjs && node ./scripts/fix-imports/fix-imports-graphql.mjs",
     "dev": "concurrently \"nodemon --exec tsx ./src/index.ts\" \"graphql-codegen --watch\"",
     "minio:check": "tsc ./src/minioInstallationCheck.ts --outDir ./build && node ./build/minioInstallationCheck.js",
