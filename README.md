@@ -10,7 +10,9 @@
 [![codecov](https://codecov.io/gh/PalisadoesFoundation/talawa-api/branch/develop/graph/badge.svg?token=CECBQTAOKM)](https://codecov.io/gh/PalisadoesFoundation/talawa-api)
 
 Talawa is a modular open source project to manage group activities of both non-profit organizations and businesses.
+A TEST COMMIT
 
+ANOTHER TEST COMMIT
 Core features include:
 
 1.  Membership management
