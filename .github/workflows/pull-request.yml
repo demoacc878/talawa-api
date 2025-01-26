@@ -222,7 +222,7 @@ jobs:
   Generate-GraphQL-Schema:
     name: 'Generate GraphQL Schema'
     runs-on: ubuntu-latest
-    needs: [Check-Code-Quality, Check-File-Count, Check-ESlint-Disable, Check-Code-Coverage-Disable]  # Ensure this runs after the required checks
+    needs: [ Check-ESlint-Disable, Check-Code-Coverage-Disable]  # Ensure this runs after the required checks
     steps:
       - uses: actions/checkout@v4  # Checkout code from the repository
       - name: Setup Node.js Environment
