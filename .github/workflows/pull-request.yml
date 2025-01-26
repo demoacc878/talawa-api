@@ -219,10 +219,40 @@ jobs:
         run: |
           python .github/workflows/code_coverage_disable_check.py --files ${{ steps.changed-files.outputs.all_changed_files }} 
 
+  Generate-GraphQL-Schema:
+    if: ${{ github.actor != 'dependabot[bot]' }}
+    name: 'Generate GraphQL Schema'
+    runs-on: ubuntu-latest
+    needs: [Check-Code-Quality, Check-File-Count, Check-ESlint-Disable, Check-Code-Coverage-Disable]  # Ensure this runs after the required checks
+    steps:
+      - uses: actions/checkout@v4  # Checkout code from the repository
+      - name: Setup Node.js Environment
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16
+      - name: Install Dependencies
+        run: npm install
+      - name: Start Test Server
+        run: |
+          nodemon --exec tsx ./src/index.ts &  # Start the server in background
+          sleep 5  # Wait for the server to be up
+      - name: Run GraphQL Codegen
+        run: npm run generate:schema
+      - name: Verify Schema Sync
+        run: |
+          git diff --exit-code || (echo "Schema is out of sync. Please commit changes." && exit 1)
+      - name: Upload Generated Schema
+        uses: actions/upload-artifact@v3
+        with:
+          name: schema-artifacts
+          path: |
+            schema.json
+            schema.md
+
   Test-Application:
     name: Testing Application
     runs-on: ubuntu-latest
-    needs: [Code-Quality-Checks, Check-ESlint-Disable, Check-Code-Coverage-Disable, Generate-GraphQL-Schema]
+    needs: [Generate-GraphQL-Schema]
     strategy:
       matrix:
         node-version: [22.x]
@@ -625,34 +655,4 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           PR_NUMBER: ${{ github.event.pull_request.number }}
           GITHUB_REPOSITORY: ${{ github.repository }}
-
-  Generate-GraphQL-Schema:
-    if: ${{ github.actor != 'dependabot[bot]' }}
-    name: 'Generate GraphQL Schema'
-    runs-on: ubuntu-latest
-    needs: Test-Application  # Replace with the appropriate job this depends on
-    steps:
-      - uses: actions/checkout@v4  # Checkout code from the repository
-      - name: Setup Node.js Environment
-        uses: actions/setup-node@v3
-        with:
-          node-version: 16
-      - name: Install Dependencies
-        run: npm install
-      - name: Start Test Server
-        run: |
-          nodemon --exec tsx ./src/index.ts &  # Start the server in background
-          sleep 5  # Wait for the server to be up
-      - name: Run GraphQL Codegen
-        run: npm run generate:schema
-      - name: Verify Schema Sync
-        run: |
-          git diff --exit-code || (echo "Schema is out of sync. Please commit changes." && exit 1)
-      - name: Upload Generated Schema
-        uses: actions/upload-artifact@v3
-        with:
-          name: schema-artifacts
-          path: |
-            schema.json
-            schema.md
 
